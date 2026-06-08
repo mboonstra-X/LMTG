@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public class PlayerWalk : MonoBehaviour
 {
     public InputActionAsset inputActions;
-    public string actionMapName = "Player1"; // Set per player in Inspector
+    public string actionMapName = "Controls Player2";
 
     private InputAction moveAction;
     private InputAction lookAction;
@@ -14,52 +14,37 @@ public class PlayerWalk : MonoBehaviour
     private Vector2 lookInput;
 
     private Rigidbody rb;
-    private InputActionMap map;
 
     public float MoveSpeed = 20f;
     public float RotateSpeed = 5f;
     public float JumpSpeed = 5f;
 
+    private InputActionMap map;
+
     private void OnEnable()
     {
         map = inputActions.FindActionMap(actionMapName);
-
-        if (map == null)
-        {
-            Debug.LogError("Action map NOT FOUND: " + actionMapName);
-            return;
-        }
-
         map.Enable();
     }
 
     private void OnDisable()
     {
-        if (map != null)
-            map.Disable();
+        map.Disable();
     }
 
     private void Awake()
     {
         map = inputActions.FindActionMap(actionMapName);
 
-        if (map == null)
-        {
-            Debug.LogError("Action map NOT FOUND in Awake: " + actionMapName);
-            return;
-        }
-
         moveAction = map.FindAction("Move");
         lookAction = map.FindAction("Look");
-        jumpAction = map.FindAction("Jump");
+        jumpAction = map.FindAction("Attack");
 
         rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
-        if (moveAction == null) return;
-
         moveInput = moveAction.ReadValue<Vector2>();
         lookInput = lookAction.ReadValue<Vector2>();
 
