@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public class PlayerWalk : MonoBehaviour
 {
     public InputActionAsset inputActions;
-    public string actionMapName = "Controls Player2";
+    public string actionMapName = "Player1";
 
     private InputAction moveAction;
     private InputAction lookAction;

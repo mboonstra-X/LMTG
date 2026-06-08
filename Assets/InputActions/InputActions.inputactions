@@ -1169,6 +1169,17 @@
                 },
                 {
                     "name": "",
+                    "id": "69654650-963a-4cc4-9d2b-3674b2458d6f",
+                    "path": "<XInputController>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Controls Player2",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "63e78050-ff2a-4164-9cc8-f9f1588b3a9a",
                     "path": "<Touchscreen>/primaryTouch/tap",
                     "interactions": "",
