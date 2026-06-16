@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class TankBullet : MonoBehaviour
 {
     public float lifeTime = 3f;
     public float damage = 1f;
 
-    [HideInInspector] public string shooterTag;
+    [HideInInspector] public int shooterId;
 
     private void Start()
     {
@@ -14,18 +15,13 @@ public class TankBullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Als het dezelfde speler is negeer het
-        if (collision.gameObject.CompareTag(shooterTag))
-        {
+        PlayerInput pi = collision.gameObject.GetComponent<PlayerInput>();
+        if (pi != null && pi.playerIndex == shooterId)
             return;
-        }
 
-        // Damage
         Health hp = collision.gameObject.GetComponent<Health>();
         if (hp != null)
-        {
             hp.TakeDamage(damage);
-        }
 
         Destroy(gameObject);
     }

@@ -1,50 +1,83 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
 public class MoveIC : MonoBehaviour
 {
     private Vector2 moveInput;
-    private Vector2 lookInput;
     private Rigidbody rb;
+    private int playerId;
 
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
     public float rotationSpeed = 120f;
 
+    [Header("Shooting")]
+    public GameObject bulletPrefab;
+    public Transform muzzlePoint;
+    public float bulletSpeed = 20f;
+    public float shootCooldown = 0.3f;
+    public ParticleSystem muzzleFlash;
+
+    private float lastShootTime = -999f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
+        var pi = GetComponent<PlayerInput>();
+        if (pi != null)
+            playerId = pi.playerIndex;
     }
 
     private void FixedUpdate()
     {
-        walk();
+        Move();
         Rotate();
     }
-    
-    public void OnMove(InputValue value)
+
+    // UNITY EVENTS VERSION
+    public void OnMove(InputAction.CallbackContext context)
     {
-        moveInput = value.Get<Vector2>();
+        moveInput = context.ReadValue<Vector2>();
     }
-    public void OnLook(InputValue value)
+
+    public void OnFire(InputAction.CallbackContext context)
     {
-        lookInput = value.Get<Vector2>();
-        Debug.Log(lookInput);
+        if (context.performed)
+            Shoot();
     }
-    private void walk()
+
+    private void Move()
     {
-        rb.MovePosition(rb.position + transform.forward * moveInput.y * moveSpeed * Time.fixedDeltaTime * 5f);
+        Vector3 forward = transform.forward * moveInput.y * moveSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + forward);
     }
 
     private void Rotate()
     {
-        //if (moveInput.y != 0)
-        //{
-            Debug.Log(lookInput);
-        float rotationAmount = lookInput.x * rotationSpeed * Time.fixedDeltaTime;
-            Quaternion rot = Quaternion.Euler(0, rotationAmount, 0);
-            rb.MoveRotation(rb.rotation * rot);
-        //}
+        float rotationAmount = moveInput.x * rotationSpeed * Time.fixedDeltaTime;
+        Quaternion delta = Quaternion.Euler(0f, rotationAmount, 0f);
+        rb.MoveRotation(rb.rotation * delta);
+    }
+
+    private void Shoot()
+    {
+        if (Time.time < lastShootTime + shootCooldown)
+            return;
+
+        lastShootTime = Time.time;
+
+        GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, muzzlePoint.rotation);
+
+        Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
+        if (bulletRb != null)
+            bulletRb.linearVelocity = muzzlePoint.forward * bulletSpeed;
+
+        TankBullet bulletScript = bullet.GetComponent<TankBullet>();
+        if (bulletScript != null)
+            bulletScript.shooterId = playerId;
+
+        if (muzzleFlash != null)
+            muzzleFlash.Play();
     }
 }
