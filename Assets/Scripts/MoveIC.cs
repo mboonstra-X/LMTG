@@ -23,9 +23,9 @@ public class MoveIC : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-
-        var pi = GetComponent<PlayerInput>();
-        if (pi != null)
+        // de trygetcomponent komt van Co-Pilot als suggestie om betere performance te hebben dan GetComponent,
+        // omdat het een bool teruggeeft in plaats van een exception te gooien als het component niet gevonden wordt.
+        if (TryGetComponent<PlayerInput>(out var pi))
             playerId = pi.playerIndex;
     }
 
@@ -49,7 +49,7 @@ public class MoveIC : MonoBehaviour
 
     private void Move()
     {
-        Vector3 forward = transform.forward * moveInput.y * moveSpeed * Time.fixedDeltaTime;
+        Vector3 forward = moveInput.y * moveSpeed * Time.fixedDeltaTime * transform.forward;
         rb.MovePosition(rb.position + forward);
     }
 
@@ -69,12 +69,10 @@ public class MoveIC : MonoBehaviour
 
         GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, muzzlePoint.rotation);
 
-        Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
-        if (bulletRb != null)
+        if (bullet.TryGetComponent<Rigidbody>(out var bulletRb))
             bulletRb.linearVelocity = muzzlePoint.forward * bulletSpeed;
 
-        TankBullet bulletScript = bullet.GetComponent<TankBullet>();
-        if (bulletScript != null)
+        if (bullet.TryGetComponent<TankBullet>(out var bulletScript))
             bulletScript.shooterId = playerId;
 
         if (muzzleFlash != null)
