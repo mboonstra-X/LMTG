@@ -17,6 +17,9 @@ public class MoveIC : MonoBehaviour
     private Rigidbody rb;
     private Vector2 moveInput;
 
+    private float ShootCooldown = 1f;
+    private float lastShootTime = 0f;
+
     // krijg de rigidbody component
     private void Awake()
     {
@@ -53,6 +56,12 @@ public class MoveIC : MonoBehaviour
         // check of alles ingesteld is
         if (bulletPrefab == null || muzzlePoint == null)
             return;
+
+        // check of de cooldown voorbij is
+        if (Time.time - lastShootTime < ShootCooldown)
+            return;
+
+        lastShootTime = Time.time;
 
         // instantiate bullet
         GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, muzzlePoint.rotation);
