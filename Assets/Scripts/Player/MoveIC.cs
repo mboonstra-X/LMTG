@@ -17,7 +17,7 @@ public class MoveIC : MonoBehaviour
     private Rigidbody rb;
     private Vector2 moveInput;
 
-    private float ShootCooldown = 1f;
+    private float ShootCooldown = 0.5f;
     private float lastShootTime = 0f;
 
     // krijg de rigidbody component
