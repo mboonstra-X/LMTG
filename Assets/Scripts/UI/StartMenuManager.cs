@@ -121,6 +121,7 @@ public class StartMenuManager : MonoBehaviour
         // geef de juiste toggle terug op basis van index
         switch (index)
         {
+            // zet de toggles goed terug
             case 0: return p1Toggle;
             case 1: return p2Toggle;
             case 2: return p3Toggle;
@@ -165,7 +166,7 @@ public class StartMenuManager : MonoBehaviour
         // als er nog geen spelers zijn
         if (nextPlayerIndex == 0)
         {
-            statusText.text = "Druk op JOIN om een speler toe te voegen";
+            statusText.text = "Druk op JOIN om een speler toe te voegen (SPACE/A)";
             return;
         }
 
@@ -183,7 +184,7 @@ public class StartMenuManager : MonoBehaviour
         // als niet iedereen ready is
         if (!allReady)
         {
-            statusText.text = "Druk op READY (R / Button East)";
+            statusText.text = "Druk op READY (R / B)";
             return;
         }
 

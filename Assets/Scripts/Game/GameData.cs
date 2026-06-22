@@ -6,6 +6,7 @@ public class GameData : MonoBehaviour
 {
     // zoek de gamedata singleton zodat alle scripts erbij kunnen
     public static GameData Instance;
+    public int winnerPlayer; // wie heeft gewonnen
 
     // maak een lijst met aantal spelers die gejoind zijn
     public int playerCount = 0;
