@@ -4,24 +4,22 @@ using UnityEngine.InputSystem;
 
 public class GameData : MonoBehaviour
 {
-    // zoek de gamedata singleton zodat alle scripts erbij kunnen
-    public static GameData Instance;
-    public int winnerPlayer; // wie heeft gewonnen
+    public static GameData Instance; // singleton
+    public int winnerPlayer;         // winnaar
 
-    // maak een lijst met aantal spelers die gejoind zijn
-    public int playerCount = 0;
-    public List<InputDevice> joinedDevices = new List<InputDevice>();
+    public int playerCount = 0;      // aantal spelers
+    public List<InputDevice> joinedDevices = new List<InputDevice>(); // devices
 
-    // singleton voor GameData met dontdestroyonload zodat het blijft bestaan tussen scenes
     private void Awake()
     {
+        // check of er al een GameData bestaat
         if (Instance != null)
         {
-            Destroy(gameObject);
+            Destroy(gameObject); // dubbele weg
             return;
         }
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        Instance = this;               // opslaan
+        DontDestroyOnLoad(gameObject); // blijft tussen scenes
     }
 }

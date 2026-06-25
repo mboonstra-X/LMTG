@@ -20,108 +20,88 @@ public class StartMenuManager : MonoBehaviour
     public TMPro.TMP_Text statusText;
 
     [Header("Control Panel")]
-    public GameObject controlPanel; // het panel dat de controls laat zien
+    public GameObject controlPanel; // controls scherm
 
-    private int nextPlayerIndex = 0;
-    // array om bij te houden welke spelers ready zijn
-    private bool[] readyStates = new bool[4];
-
-    // bool om bij te houden of het controls panel open staat
-    private bool controlsOpen = false;
+    private int nextPlayerIndex = 0;        // aantal gejoinde spelers
+    private bool[] readyStates = new bool[4]; // ready per speler
+    private bool controlsOpen = false;      // staat controls open
 
     private void Start()
     {
-        // zet de toggles interactables uit als ik dat vergeten ben
+        // toggles uitzetten
         p1Toggle.interactable = false;
         p2Toggle.interactable = false;
         p3Toggle.interactable = false;
         p4Toggle.interactable = false;
 
-        // zet de toggles uit als dat niet standaard is
+        // toggles off
         SetToggle(0, false);
         SetToggle(1, false);
         SetToggle(2, false);
         SetToggle(3, false);
 
-        // zorg dat het control panel uit staat bij start
+        // controls panel uit
         if (controlPanel != null)
             controlPanel.SetActive(false);
 
-        // voeg listeners toe aan de buttons indien dat nog niet gedaan is
+        // knoppen koppelen
         startButton.onClick.AddListener(StartGame);
         controlsButton.onClick.AddListener(ToggleControls);
         quitButton.onClick.AddListener(QuitGame);
 
-        // update de status tekst bij start
-        UpdateStatusText();
+        UpdateStatusText(); // tekst updaten
     }
 
     public void OnJoin(InputAction.CallbackContext ctx)
     {
-        // checck of de actie wordt uitgevoerd, anders return
-        if (!ctx.performed) return;
+        if (!ctx.performed) return; // alleen bij performed
 
-        // krijg het device van de speler
-        InputDevice device = ctx.control.device;
+        InputDevice device = ctx.control.device; // device pakken
 
-        // Check of device al gejoined is
         if (GameData.Instance.joinedDevices.Contains(device))
-            return;
+            return; // al gejoined
 
-        // check of er nog plek is (MAX 4)
         if (nextPlayerIndex > 3)
-            return;
+            return; // max 4
 
-        // Toggle aan als nieuwe speler gejoind is
-        SetToggle(nextPlayerIndex, true);
+        SetToggle(nextPlayerIndex, true); // toggle aan
 
-        // Device opslaan
-        GameData.Instance.joinedDevices.Add(device);
+        GameData.Instance.joinedDevices.Add(device); // opslaan
 
-        nextPlayerIndex++;
+        nextPlayerIndex++; // volgende slot
 
-        // update status tekst
-        UpdateStatusText();
+        UpdateStatusText(); // tekst updaten
     }
 
     public void OnReady(InputAction.CallbackContext ctx)
     {
-        // check of de actie wordt uitgevoerd, anders return
         if (!ctx.performed) return;
 
-        // krijg het device van de speler
         InputDevice device = ctx.control.device;
 
-        // zoek de index van dit device in de joinedDevices lijst
-        int index = GameData.Instance.joinedDevices.IndexOf(device);
+        int index = GameData.Instance.joinedDevices.IndexOf(device); // speler index
 
-        // als device niet gevonden is, return
-        if (index == -1) return;
+        if (index == -1) return; // niet gevonden
 
-        // toggle de ready state van deze speler
-        readyStates[index] = !readyStates[index];
+        readyStates[index] = !readyStates[index]; // toggle ready
 
-        // verander de kleur van de toggle zodat je ziet dat hij ready is
+        // toggle kleur aanpassen
         Toggle t = GetToggleByIndex(index);
         if (t != null)
         {
             ColorBlock cb = t.colors;
-            // groen als ready, wit als niet ready
             cb.normalColor = readyStates[index] ? Color.green : Color.white;
             cb.highlightedColor = cb.normalColor;
             t.colors = cb;
         }
 
-        // update status tekst
         UpdateStatusText();
     }
 
     private Toggle GetToggleByIndex(int index)
     {
-        // geef de juiste toggle terug op basis van index
         switch (index)
         {
-            // zet de toggles goed terug
             case 0: return p1Toggle;
             case 1: return p2Toggle;
             case 2: return p3Toggle;
@@ -134,7 +114,6 @@ public class StartMenuManager : MonoBehaviour
     {
         switch (index)
         {
-            // Zet de juiste toggle aan of uit
             case 0: p1Toggle.isOn = state; break;
             case 1: p2Toggle.isOn = state; break;
             case 2: p3Toggle.isOn = state; break;
@@ -144,33 +123,28 @@ public class StartMenuManager : MonoBehaviour
 
     private void ToggleControls()
     {
-        // toggle het controls panel aan/uit
-        controlsOpen = !controlsOpen;
+        controlsOpen = !controlsOpen; // open/close
 
         if (controlPanel != null)
             controlPanel.SetActive(controlsOpen);
 
-        // update status tekst zodat het niet verwarrend is
         UpdateStatusText();
     }
 
     private void UpdateStatusText()
     {
-        // als controls open zijn, laat alleen controls info zien
         if (controlsOpen)
         {
             statusText.text = "Controls open - druk CONTROLS om te sluiten";
             return;
         }
 
-        // als er nog geen spelers zijn
         if (nextPlayerIndex == 0)
         {
-            statusText.text = "Druk op JOIN om een speler toe te voegen (SPACE/A)";
+            statusText.text = "Druk JOIN om te joinen (SPACE/A)";
             return;
         }
 
-        // check of alle spelers ready zijn
         bool allReady = true;
         for (int i = 0; i < nextPlayerIndex; i++)
         {
@@ -181,48 +155,40 @@ public class StartMenuManager : MonoBehaviour
             }
         }
 
-        // als niet iedereen ready is
         if (!allReady)
         {
-            statusText.text = "Druk op READY (R / B)";
+            statusText.text = "Druk READY (R/B)";
             return;
         }
 
-        // als iedereen ready is
-        statusText.text = "Alle spelers zijn ready! Druk op START";
+        statusText.text = "Iedereen ready! Druk START";
     }
 
     private void StartGame()
     {
-        // sla het aantal spelers op in GameData zodat MultiplayerManager weet hoeveel spelers er zijn
-        GameData.Instance.playerCount = nextPlayerIndex;
+        GameData.Instance.playerCount = nextPlayerIndex; // opslaan
 
-        // check of er spelers zijn gejoined, anders log een bericht en return
         if (nextPlayerIndex == 0)
         {
-            Debug.Log("Geen spelers ready.");
+            Debug.Log("Geen spelers.");
             return;
         }
 
-        // check of alle gejoinde spelers ook echt ready zijn
         for (int i = 0; i < nextPlayerIndex; i++)
         {
-            // als een speler niet ready is, log en return
             if (!readyStates[i])
             {
-                Debug.Log("Niet alle spelers zijn ready.");
+                Debug.Log("Niet iedereen ready.");
                 return;
             }
         }
 
-        // laad de game scene en start het spel
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("GameScene"); // start game
     }
 
-    // sluit de game (werkt niet in editor)
     private void QuitGame()
     {
         Debug.Log("Quit game.");
-        Application.Quit();
+        Application.Quit(); // afsluiten
     }
 }

@@ -2,13 +2,13 @@
 
 public class TankBullet : MonoBehaviour
 {
-    public GameObject owner; // wie heeft de bullet geschoten
-    public float LifeTime = 3f; // hoe lang blijft de bullet bestaan
-    public ParticleSystem Explosion;
+    public GameObject owner;      // tank die schoot
+    public float LifeTime = 3f;   // hoe lang bullet blijft
+    public ParticleSystem Explosion; // explosion effect
 
     private void Start()
     {
-        Destroy(gameObject, LifeTime); // bullet vernietigen na LifeTime
+        Destroy(gameObject, LifeTime); // auto verwijderen
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -20,13 +20,15 @@ public class TankBullet : MonoBehaviour
             return;
         }
 
-        // zoek health op object of parent
+        // health zoeken
         Health hp = collision.gameObject.GetComponentInParent<Health>();
 
-        // als health bestaat → damage doen
+        // damage doen
         if (hp != null)
             hp.TakeDamage(1);
-        Instantiate(Explosion, transform.position, Quaternion.identity); // explosion prefab
+
+        // explosion effect
+        Instantiate(Explosion, transform.position, Quaternion.identity);
 
         Destroy(gameObject); // bullet weg
     }

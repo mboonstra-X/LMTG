@@ -5,37 +5,37 @@ using UnityEngine.SceneManagement;
 
 public class WinManager : MonoBehaviour
 {
-    public TextMeshProUGUI winText; // tekst die laat zien wie gewonnen heeft
-    public Button RestartBut;
-    public Button ReturnBut;
-    public Button QuitBut;
+    public TextMeshProUGUI winText; // winnaar tekst
+    public Button RestartBut;       // restart knop
+    public Button ReturnBut;        // menu knop
+    public Button QuitBut;          // quit knop
 
     private void Start()
     {
+        // knoppen koppelen
         RestartBut.onClick.AddListener(RestartGame);
         ReturnBut.onClick.AddListener(ReturnToMenu);
         QuitBut.onClick.AddListener(QuitGame);
 
-        // haal winnaar op uit GameData
+        // winnaar ophalen
         int winner = GameData.Instance.winnerPlayer;
-        // zet tekst
+
+        // tekst zetten
         winText.text = "Player " + winner + " Wins!";
     }
 
-    // knop: restart game
     public void RestartGame()
     {
-        SceneManager.LoadScene("GameScene"); // jouw speel-scene naam
+        SceneManager.LoadScene("GameScene"); // opnieuw spelen
     }
 
-    // knop: terug naar menu
     public void ReturnToMenu()
     {
-        SceneManager.LoadScene("StartMenu");
+        SceneManager.LoadScene("StartMenu"); // terug naar menu
     }
 
     public void QuitGame()
     {
-        Application.Quit();
+        Application.Quit(); // spel afsluiten
     }
 }
