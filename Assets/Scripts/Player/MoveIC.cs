@@ -4,20 +4,24 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class MoveIC : MonoBehaviour
 {
+    public bool IsMoving { get; private set; } // check of tank beweegt
+
     [Header("Movement")]
-    public float moveSpeed = 5f;       // snelheid vooruit/achteruit
+    public float moveSpeed = 5f;       // vooruit snelheid
     public float rotationSpeed = 120f; // draai snelheid
 
     [Header("Shooting")]
     public GameObject bulletPrefab;    // bullet prefab
-    public Transform muzzlePoint;      // waar bullet uit komt
+    public Transform muzzlePoint;      // plek waar bullet uit komt
     public float bulletSpeed = 20f;    // snelheid bullet
 
-    public AudioClip shootsound;     // schiet geluid
-    public AudioSource MoveSound;     // beweeg geluid
+    public AudioClip shootsound;       // schiet geluid
+    public AudioSource MoveSound;      // rij geluid
 
-    private Rigidbody rb;              // tank rigidbody
-    private Vector2 moveInput;         // input van speler
+    public ParticleSystem muzzleFlash; // muzzle flash effect
+
+    private Rigidbody rb;              // rigidbody tank
+    private Vector2 moveInput;         // input speler
 
     private float ShootCooldown = 0.5f; // tijd tussen schoten
     private float lastShootTime = 0f;   // laatste schot tijd
@@ -27,13 +31,13 @@ public class MoveIC : MonoBehaviour
         rb = GetComponent<Rigidbody>(); // pak rigidbody
     }
 
-    // movement input opslaan
+    // input voor bewegen
     public void OnMove(InputAction.CallbackContext ctx)
     {
         moveInput = ctx.ReadValue<Vector2>();
     }
 
-    // schieten als knop wordt ingedrukt
+    // input voor schieten
     public void OnAttack(InputAction.CallbackContext ctx)
     {
         if (ctx.performed)
@@ -42,11 +46,13 @@ public class MoveIC : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // vooruit/achteruit bewegen
+        IsMoving = moveInput.x != 0 || moveInput.y != 0;
+
+        // vooruit en achteruit
         Vector3 forward = transform.forward * moveInput.y * moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + forward);
 
-        // Driving Sound
+        // rij geluid
         if (moveInput.y != 0 && !MoveSound.isPlaying)
         {
             MoveSound.loop = true;
@@ -74,16 +80,22 @@ public class MoveIC : MonoBehaviour
 
         lastShootTime = Time.time;
 
+        // schiet geluid
+        AudioSource.PlayClipAtPoint(shootsound, muzzlePoint.position, 1f);
+
         // bullet maken
-        AudioSource.PlayClipAtPoint(shootsound, muzzlePoint.position, 1f); // speel schiet geluid
         GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, muzzlePoint.rotation);
 
-        // ⭐ bullet weet wie hem heeft geschoten
+        // geef bullet de eigenaar
         bullet.GetComponent<TankBullet>().owner = gameObject;
 
         // bullet snelheid
         Rigidbody br = bullet.GetComponent<Rigidbody>();
         if (br != null)
             br.linearVelocity = muzzlePoint.forward * bulletSpeed;
+
+        // muzzle flash
+        if (muzzleFlash != null)
+            muzzleFlash.Play();
     }
 }

@@ -3,6 +3,13 @@
 public class TankBullet : MonoBehaviour
 {
     public GameObject owner; // wie heeft de bullet geschoten
+    public float LifeTime = 3f; // hoe lang blijft de bullet bestaan
+    public ParticleSystem Explosion;
+
+    private void Start()
+    {
+        Destroy(gameObject, LifeTime); // bullet vernietigen na LifeTime
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -19,6 +26,7 @@ public class TankBullet : MonoBehaviour
         // als health bestaat → damage doen
         if (hp != null)
             hp.TakeDamage(1);
+        Instantiate(Explosion, transform.position, Quaternion.identity); // explosion prefab
 
         Destroy(gameObject); // bullet weg
     }

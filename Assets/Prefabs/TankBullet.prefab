@@ -155,5 +155,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53d1d496aedf5ac42840849900aa1540, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankBullet
-  lifeTime: 3
-  damage: 1
+  owner: {fileID: 0}
+  LifeTime: 3
+  Explosion: {fileID: 2468422130510435082, guid: 2973de8ab1c417f49abe4ed1166bd3a8, type: 3}
